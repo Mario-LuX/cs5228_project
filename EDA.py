@@ -63,9 +63,10 @@ def process_no_of_units():
         temp=units_df[units_df['name']==k]['no_of_units']
         if(len(temp)==0):
             # print(k, len(v))
-            house_df.drop(index=v.index,inplace=True) #没有对应记录删除（大多数都没有）
+            house_df.drop(index=v.index,inplace=True) #no name matched, drop them (a large part)
         else:
-            house_df.loc[v.index,'no_of_units']=np.mean(temp) #数据中所有同name记录中no_of_units都相同
+            house_df.loc[v.index,'no_of_units']=np.mean(temp)
+            #Note that every record with same name should have same number of no_of_units
     # print(len(house_df)-house_df['no_of_units'].count())
     print("After processing no_of_units", len(house_df))
 
