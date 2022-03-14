@@ -218,16 +218,16 @@ def remove_features():
 
 def add_no_of_POI(radius=1):
     # Add number of POI in am area of "radius" kilometers centered with each house
-    commercial_center_df = pd.read_csv('./auxiliary-data/sg-commerical-centres.csv')
-    hawker_center_df = pd.read_csv('./auxiliary-data/sg-gov-markets-hawker-centres.csv')
-    primary_school_df = pd.read_csv('./auxiliary-data/sg-primary-schools.csv')
-    secondary_school_df = pd.read_csv('./auxiliary-data/sg-secondary-schools.csv')
-    shopping_mall_df = pd.read_csv('./auxiliary-data/sg-shopping-malls.csv')
-    train_station_df = pd.read_csv('./auxiliary-data/sg-train-stations.csv')
+    commercial_center_df = pd.read_csv('Data/auxiliary-data/auxiliary-data/sg-commerical-centres.csv')
+    hawker_center_df = pd.read_csv('Data/auxiliary-data/auxiliary-data/sg-gov-markets-hawker-centres.csv')
+    primary_school_df = pd.read_csv('Data/auxiliary-data/auxiliary-data/sg-primary-schools.csv')
+    secondary_school_df = pd.read_csv('Data/auxiliary-data/auxiliary-data/sg-secondary-schools.csv')
+    shopping_mall_df = pd.read_csv('Data/auxiliary-data/auxiliary-data/sg-shopping-malls.csv')
+    train_station_df = pd.read_csv('Data/auxiliary-data/auxiliary-data/sg-train-stations.csv')
     auxiliary_df = [commercial_center_df, hawker_center_df, primary_school_df, secondary_school_df, shopping_mall_df,
                     train_station_df]
     poi_df = pd.concat(auxiliary_df, ignore_index=True)
-    no_of_poi_5km = []
+    no_of_poi = []
     for i in range(len(house_df)):
         if (i % 100 == 0):
             print("processed: %d" % (i))
@@ -235,8 +235,8 @@ def add_no_of_POI(radius=1):
         for j in range(len(poi_df)):
             dis.append(np.sqrt(((house_df['lat'].iloc[i] - poi_df['lat'].iloc[j]) * 111000) ** 2 +
                                ((house_df['lng'].iloc[i] - poi_df['lng'].iloc[j]) * 111000) ** 2))
-        no_of_poi_5km.append(len([x for x in dis if x <= radius*1000]))
-    house_df['no_of_poi'] = pd.Series(no_of_poi_5km)
+        no_of_poi.append(len([x for x in dis if x <= radius*1000]))
+    house_df['no_of_poi'] = pd.Series(no_of_poi,index=house_df.index)
 
 if __name__=='__main__':
     print(len(house_df))
@@ -249,6 +249,6 @@ if __name__=='__main__':
     add_nearest_distance()
     add_no_of_POI(radius=1)
     remove_features()
-    house_df.to_csv('temp.csv',index=False)
+    house_df.to_csv('train.csv',index=False)
     sns.heatmap(house_df[['bedrooms', 'bathrooms', 'area_size']].corr())
     plt.show()
