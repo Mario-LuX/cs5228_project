@@ -131,39 +131,35 @@ def process_no_of_units_test():
     print("After processing no_of_units:", len(house_df))
 
 
-def process_tenure_test():
+def process_tenure_test(house_df):
     # all missing values in 'tenuer' are replaced with number 99 (not str)
     # We want to calculate how many years we can use for this house from now on
     # and divide these years into three categories: <500 years, 500~5000 years and >5000 years
     # We map them to 0, 1, 2
-    house_df.fillna({"tenure:99"})
-
-    def catogory(tenure_str: str) -> int:
-        def tenure_handle(tenure: str) -> int:
-            # Calculate how many years we could use
-            # Tenure only contains four formats: "freehold" "leasehold/XX years" "XX years" and "XX years from XX"
-            string_list = tenure.split(" ")
-            if string_list[0] == "freehold":
-                return 9999  # "freehold"
-            elif string_list[0][0].isalpha():
-                return int(string_list[0][10:])  # "leasehold/XX years"
-            elif string_list[0][0].isdigit() and len(string_list) == 2:
-                return int(string_list[0])  # "XX years"
-            else:
-                return int(string_list[0]) - (
-                    2022 - int(string_list[-1][-4:])
-                )  # "XX years from XX"
-
-        temp = tenure_handle(tenure_str)
-        if temp < 500:
-            return 0
-        elif temp < 5000:
-            return 1
+    house_df['tenure'].fillna(value="99 years",inplace=True)
+    def tenure_handle(tenure: str) -> int:
+        # Calculate how many years we could use
+        # Tenure only contains four formats: "freehold" "leasehold/XX years" "XX years" and "XX years from XX"
+        string_list = tenure.split(" ")
+        if string_list[0] == 'freehold':
+            return 9999  # "freehold"
+        elif string_list[0][0].isalpha():
+            return int(string_list[0][10:])  # "leasehold/XX years"
+        elif string_list[0][0].isdigit() and len(string_list) == 2:
+            return int(string_list[0])  # "XX years"
         else:
-            return 2
+            return int(string_list[0]) - (2022 - int(string_list[-1][-4:]))  # "XX years from XX"
 
-    house_df["tenure"] = house_df["tenure"].map(lambda x: catogory(x))
-    house_df = pd.get_dummies(house_df, columns=["tenure"], prefix="tenure")
+    def catogory(temp: int) -> int:
+        if temp<500: return 0
+        elif temp<5000: return 1
+        else: return 2
+    house_df['tenure'] = house_df['tenure'].map(lambda x: tenure_handle(x))
+    house_df['tenure'] =house_df['tenure'].map(lambda x: catogory(x))
+    one_hot=pd.get_dummies(house_df['tenure'],prefix='tenure')
+    for i in one_hot.columns:
+        house_df[i]=pd.Series(list(one_hot[i]),index=house_df.index)
+    house_df.drop(columns=['tenure'],inplace=True)
 
 
 def process_market_segment():
@@ -319,7 +315,7 @@ def add_no_of_POI_test():
         train_station_df,
     ]
     poi_df = pd.concat(auxiliary_df, ignore_index=True)
-    no_of_poi_5km = []
+    no_of_poi = []
     for i in range(len(house_df)):
         if i % 100 == 0:
             print("processed: %d" % (i))
@@ -333,9 +329,9 @@ def add_no_of_POI_test():
                 )
             )
 
-        no_of_poi_5km.append(len([x for x in dis if x <= 1000]))
+        no_of_poi.append(len([x for x in dis if x <= 1000]))
 
-    house_df["no_of_poi_5km"] = pd.Series(no_of_poi_5km)
+    house_df["no_of_poi"] = pd.Series(no_of_poi)
 
 
 def remove_features_test():
