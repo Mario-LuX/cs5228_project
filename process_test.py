@@ -104,14 +104,14 @@ def process_no_of_units_test():
     # dealing with missing data of no_of_units, we use the record with the same 'name' to fill missing slots
     # Otherwise we fill them with the average of units of different type, respectively. (No missing value in 'type')
     no_of_units_avail_df = house_df.dropna(subset=["no_of_units"])
-    ave_units_apt = np.mean(
+    ave_units_apt = round(np.mean(
         no_of_units_avail_df[no_of_units_avail_df["type"] == "apartment"]["no_of_units"]
-    )
-    ave_units_condo = np.mean(
+    ))
+    ave_units_condo = round(np.mean(
         no_of_units_avail_df[no_of_units_avail_df["type"] == "condominium"][
             "no_of_units"
         ]
-    )
+    ))
 
     for k, v in house_df[house_df["no_of_units"].isna()].groupby(["name"]):
         temp = no_of_units_avail_df[no_of_units_avail_df["name"] == k]["no_of_units"]
