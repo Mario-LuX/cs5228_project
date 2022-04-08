@@ -15,9 +15,8 @@ Notice: might need some minor  changes about the file path when running because 
 
 This directory includes:
 
-- processed training set
-- processed test set
-- additional raw data from crawler
-- processed crawled data
-- crawler
-- urls: results of the first phase of crawler
+- processed_train.csv: processed training set
+- processed_test.csv: processed test set
+- crawler.csv: additional raw data from crawler
+- crawl_train.csv: processed crawled data
+- urls.txt: results of the first phase of crawler
