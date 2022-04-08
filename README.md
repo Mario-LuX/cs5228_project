@@ -18,5 +18,5 @@ This directory includes:
 - processed_train.csv: processed training set
 - processed_test.csv: processed test set
 - crawler.csv: additional raw data from crawler
-- crawl_train.csv: processed crawled data
+- train_crawl.csv: processed crawled data
 - urls.txt: results of the first phase of crawler
